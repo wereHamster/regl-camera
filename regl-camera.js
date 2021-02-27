@@ -4,13 +4,9 @@ var identity = require('gl-mat4/identity')
 var perspective = require('gl-mat4/perspective')
 var lookAt = require('gl-mat4/lookAt')
 
-module.exports = createCamera
-
 var isBrowser = typeof window !== 'undefined'
 
-function createCamera (regl, props_) {
-  var props = props_ || {}
-
+export function createCamera(regl, props = {}) {
   // Preserve backward-compatibilty while renaming preventDefault -> noScroll
   if (typeof props.noScroll === 'undefined') {
     props.noScroll = props.preventDefault;
@@ -25,6 +21,8 @@ function createCamera (regl, props_) {
     distance: Math.log(props.distance || 10.0),
     eye: new Float32Array(3),
     up: new Float32Array(props.up || [0, 1, 0]),
+    right: new Float32Array(props.up || [1, 0, 0]),
+    front: new Float32Array(props.up || [0, 0, 1]),
     fovy: props.fovy || Math.PI / 4.0,
     near: typeof props.near !== 'undefined' ? props.near : 0.01,
     far: typeof props.far !== 'undefined' ? props.far : 1000.0,
@@ -39,9 +37,6 @@ function createCamera (regl, props_) {
 
   var element = props.element
   var damping = typeof props.damping !== 'undefined' ? props.damping : 0.9
-
-  var right = new Float32Array([1, 0, 0])
-  var front = new Float32Array([0, 0, 1])
 
   var minDistance = Math.log('minDistance' in props ? props.minDistance : 0.1)
   var maxDistance = Math.log('maxDistance' in props ? props.maxDistance : 1000)
@@ -102,6 +97,8 @@ function createCamera (regl, props_) {
     var center = cameraState.center
     var eye = cameraState.eye
     var up = cameraState.up
+    var right = cameraState.right
+    var front = cameraState.front
     var dtheta = cameraState.dtheta
     var dphi = cameraState.dphi
 
@@ -137,7 +134,8 @@ function createCamera (regl, props_) {
   cameraState.dirty = true;
 
   var injectContext = regl({
-    context: Object.assign({}, cameraState, {
+    context:{
+      ...cameraState,
       dirty: function () {
         return cameraState.dirty;
       },
@@ -150,7 +148,7 @@ function createCamera (regl, props_) {
         if (cameraState.flipY) { cameraState.projection[5] *= -1 }
         return cameraState.projection
       }
-    }),
+    },
     uniforms: Object.keys(cameraState).reduce(function (uniforms, name) {
       uniforms[name] = regl.context(name)
       return uniforms
