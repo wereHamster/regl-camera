@@ -1,10 +1,5 @@
 export function createCamera(regl, props = {}) {
-  // Preserve backward-compatibilty while renaming preventDefault -> noScroll
-  if (typeof props.noScroll === "undefined") {
-    props.noScroll = props.preventDefault;
-  }
-
-  var cameraState = {
+  const cameraState = {
     view: identity(new Float32Array(16)),
     projection: identity(new Float32Array(16)),
 
@@ -18,6 +13,7 @@ export function createCamera(regl, props = {}) {
     up: new Float32Array(props.up || [0, 1, 0]),
     right: new Float32Array(props.right || [1, 0, 0]),
     front: new Float32Array(props.front || [0, 0, 1]),
+
     fovy: props.fovy || Math.PI / 4.0,
     near: props.near ?? 0.01,
     far: props.far ?? 1000.0,
