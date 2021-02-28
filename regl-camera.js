@@ -37,18 +37,12 @@ export function createCamera(regl, props = {}) {
   if (props.mouse !== false) {
     var source = element || regl._gl.canvas;
 
-    function getWidth() {
-      return element ? element.offsetWidth : window.innerWidth;
-    }
-
-    function getHeight() {
-      return element ? element.offsetHeight : window.innerHeight;
-    }
-
     source.addEventListener("mousemove", (ev) => {
       if (ev.buttons & 1) {
-        const dx = ev.movementX / getWidth();
-        const dy = ev.movementY / getHeight();
+        const { width, height } = ev.currentTarget.getClientBoundingRect()
+
+        const dx = ev.movementX / width
+        const dy = ev.movementY / height
 
         cameraState.dtheta += cameraState.rotationSpeed * 4.0 * dx;
         cameraState.dphi += cameraState.rotationSpeed * 4.0 * dy;
@@ -58,7 +52,8 @@ export function createCamera(regl, props = {}) {
 
     if (!props.noScroll) {
       source.addEventListener("wheel", (ev) => {
-        ddistance += (ev.deltaY / getHeight()) * cameraState.zoomSpeed;
+        const { height } = ev.currentTarget.getClientBoundingRect()
+        ddistance += (ev.deltaY / height) * cameraState.zoomSpeed;
         cameraState.dirty = true;
       });
     }
