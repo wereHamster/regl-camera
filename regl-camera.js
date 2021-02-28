@@ -7,33 +7,34 @@ export function createCamera(regl, props = {}) {
   var cameraState = {
     view: identity(new Float32Array(16)),
     projection: identity(new Float32Array(16)),
+
     center: new Float32Array(props.center || 3),
+    eye: new Float32Array(3),
+
     theta: props.theta || 0,
     phi: props.phi || 0,
     distance: Math.log(props.distance || 10.0),
-    eye: new Float32Array(3),
+
     up: new Float32Array(props.up || [0, 1, 0]),
     right: new Float32Array(props.right || [1, 0, 0]),
     front: new Float32Array(props.front || [0, 0, 1]),
     fovy: props.fovy || Math.PI / 4.0,
-    near: typeof props.near !== "undefined" ? props.near : 0.01,
-    far: typeof props.far !== "undefined" ? props.far : 1000.0,
-    noScroll: typeof props.noScroll !== "undefined" ? props.noScroll : false,
+    near: props.near ?? 0.01,
+    far: props.far ?? 1000.0,
+    noScroll: props.noScroll ?? false,
     flipY: !!props.flipY,
     dtheta: 0,
     dphi: 0,
-    rotationSpeed:
-      typeof props.rotationSpeed !== "undefined" ? props.rotationSpeed : 1,
-    zoomSpeed: typeof props.zoomSpeed !== "undefined" ? props.zoomSpeed : 1,
-    renderOnDirty:
-      typeof props.renderOnDirty !== undefined ? !!props.renderOnDirty : false,
+    rotationSpeed: props.rotationSpeed ?? 1,
+    zoomSpeed: props.zoomSpeed ?? 1,
+    renderOnDirty: props.renderOnDirty ?? false,
   };
 
   var element = props.element;
-  var damping = typeof props.damping !== "undefined" ? props.damping : 0.9;
+  var damping =  props.damping ?? 0.9;
 
-  var minDistance = Math.log("minDistance" in props ? props.minDistance : 0.1);
-  var maxDistance = Math.log("maxDistance" in props ? props.maxDistance : 1000);
+  var minDistance = Math.log(props.minDistance ?? 0.1);
+  var maxDistance = Math.log(props.maxDistance ?? 1000);
 
   var ddistance = 0;
 
